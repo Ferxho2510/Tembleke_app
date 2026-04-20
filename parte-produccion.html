@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Parte Productivo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #1e2130;
+    --surface: #272b3d;
+    --surface2: #2f3448;
+    --border: #3a3f57;
+    --accent: #5b5fef;
+    --accent-hover: #6e72f5;
+    --green: #2d9e5f;
+    --green-bg: #1a3d2b;
+    --red: #b34a4a;
+    --red-bg: #3d1a1a;
+    --text: #e8eaf0;
+    --text-muted: #8b90a8;
+    --label-bg: #2a2f45;
+    --input-bg: #ffffff;
+    --input-text: #1e2130;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 28px 24px;
+    animation: fadeIn 0.2s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .status-badge {
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  .status-badge.green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  .status-badge.red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+  .status-machine {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* TITLE */
+  .screen-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  /* HOME SCREEN */
+  .home-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding-bottom: 40px;
+  }
+  .home-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .home-title {
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .home-title span { font-weight: 600; color: var(--accent); }
+  .home-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    width: 100%;
+    padding: 20px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.01em;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-green {
+    background: var(--green);
+    color: white;
+  }
+
+  .btn-danger {
+    background: var(--red);
+    color: white;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-area {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    text-align: left;
+    padding: 24px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 18px;
+  }
+  .btn-area .arrow { color: var(--accent); font-size: 20px; }
+  .btn-area:hover { border-color: var(--accent); }
+
+  /* FORM ROWS */
+  .form-rows { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .label-cell {
+    background: var(--label-bg);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+    min-height: 56px;
+  }
+
+  .input-cell {
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="time"],
+  select {
+    width: 100%;
+    height: 100%;
+    min-height: 56px;
+    background: var(--input-bg);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    color: var(--input-text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  input::placeholder { color: #aaa; }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  /* SEGMENTED CONTROL */
+  .segmented {
+    display: flex;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 3px;
+    gap: 2px;
+    min-height: 56px;
+    align-items: center;
+  }
+  .seg-btn {
+    flex: 1;
+    padding: 10px 6px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .seg-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+  .seg-btn:active { transform: scale(0.95); }
+
+  /* TOGGLE GROUP OK/NOK/NC */
+  .toggle-group {
+    display: flex;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 3px;
+    gap: 2px;
+    min-height: 56px;
+    align-items: center;
+  }
+  .toggle-btn {
+    flex: 1;
+    padding: 10px 4px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-muted);
+  }
+  .toggle-btn.ok.active { background: var(--green); color: white; }
+  .toggle-btn.nok.active { background: var(--red); color: white; }
+  .toggle-btn.nc.active { background: #7a5c00; color: #ffd060; }
+  .toggle-btn:active { transform: scale(0.95); }
+
+  /* WEIGHT GRID */
+  .weight-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .weight-input {
+    background: var(--input-bg);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    color: var(--input-text);
+    text-align: center;
+    width: 100%;
+    outline: none;
+    min-height: 56px;
+  }
+  .weight-input:focus { border-color: var(--accent); }
+  .weight-input::placeholder { color: #bbb; }
+
+  /* INSUMOS TABLE */
+  .insumos-header {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .insumos-header-cell {
+    background: var(--label-bg);
+    border-radius: 8px;
+    padding: 10px 8px;
+    font-size: 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .insumos-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .insumos-label {
+    background: var(--label-bg);
+    border-radius: 8px;
+    padding: 14px 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+  .insumos-input {
+    background: var(--input-bg);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 10px 8px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--input-text);
+    text-align: center;
+    width: 100%;
+    outline: none;
+    min-height: 52px;
+  }
+  .insumos-input:focus { border-color: var(--accent); }
+  .insumos-input::placeholder { color: #bbb; font-size: 12px; }
+
+  /* MENU BUTTONS */
+  .menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  .btn-menu {
+    width: 100%;
+    padding: 28px 20px;
+    border: none;
+    border-radius: var(--radius-lg);
+    background: var(--accent);
+    color: white;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .btn-menu:hover { background: var(--accent-hover); }
+  .btn-menu:active { transform: scale(0.97); }
+
+  /* BOTTOM ACTIONS */
+  .bottom-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 24px;
+  }
+  .bottom-actions .btn { flex: 1; }
+
+  /* SINGLE BOTTOM */
+  .bottom-single {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+
+  /* SCROLL */
+  .scrollable {
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scrollable::-webkit-scrollbar { display: none; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* LOADING */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30,33,48,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .loading-overlay.show { opacity: 1; pointer-events: all; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* INFO CHIPS */
+  .info-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .chip span { color: var(--text); font-weight: 500; }
+
+  /* HOME LOGO */
+  .home-logo-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+    margin-top: -20px;
+  }
+  .home-logo-img {
+    width: 80%;
+    max-width: 320px;
+    object-fit: contain;
+    /* black background is part of the image, mix-blend-mode removes it */
+    mix-blend-mode: lighten;
+    filter: drop-shadow(0 4px 24px rgba(255,180,0,0.25));
+  }
+
+  /* LIMPIEZA */
+  .limpieza-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 20px 24px;
+    text-align: center;
+    gap: 8px;
+  }
+  .limpieza-icon { font-size: 40px; line-height: 1; }
+  .limpieza-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .limpieza-timer {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin: 4px 0;
+  }
+  .limpieza-sublabel {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* CONTROLS HEADER */
+  .ctrl-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  /* INSUMOS BUTTON */
+  .btn-insumos {
+    width: 100%;
+    height: 100%;
+    min-height: 56px;
+    background: var(--surface2);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    padding: 12px 14px;
+  }
+  .btn-insumos:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-insumos:active { transform: scale(0.97); }
+  .btn-insumos.saved { border-style: solid; border-color: var(--green); color: var(--green); background: var(--green-bg); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ======================== SCREEN 1: HOME ======================== -->
+  <div class="screen active" id="screen-home">
+    <div class="home-header">
+      <div class="home-logo-wrap">
+        <img src="logo-tembleke.png" alt="Tembleke" class="home-logo-img" />
+      </div>
+      <div class="home-sub">Sistema de parte productivo</div>
+      <div class="home-sub" style="margin-bottom:32px;font-size:12px;opacity:0.5;">Seleccioná el área de trabajo</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <button class="btn btn-area" onclick="selectArea('Blisteras')">
+          Blisteras <span class="arrow">→</span>
+        </button>
+        <button class="btn btn-area" onclick="selectArea('Cocina')">
+          Cocina <span class="arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 2: LOGIN (Operario) ======================== -->
+  <div class="screen" id="screen-login">
+    <div class="screen-title">Inicio de sesión</div>
+    <div class="form-rows">
+      <div class="form-row">
+        <div class="label-cell">Legajo</div>
+        <div class="input-cell">
+          <input type="text" id="op-legajo" placeholder="000" maxlength="6" inputmode="numeric" oninput="buscarOperario()" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Operario</div>
+        <div class="input-cell">
+          <input type="text" id="op-nombre" placeholder="—" readonly
+            style="background:#f0f0f0;color:#555;cursor:default;border-color:transparent;font-weight:500;" />
+        </div>
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="goTo('screen-config')">Volver</button>
+      <button class="btn btn-green" onclick="goToConfigProduccion()">Comenzar producción</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 3: CONFIG PRODUCCIÓN ======================== -->
+  <div class="screen" id="screen-config">
+    <div class="screen-title">Configuración de turno</div>
+    <div class="form-rows">
+      <div class="form-row" id="row-maquina">
+        <div class="label-cell">Máquina</div>
+        <div class="input-cell">
+          <div class="segmented">
+            <button class="seg-btn active" onclick="selectMaquina(this,'M1')">M1</button>
+            <button class="seg-btn" onclick="selectMaquina(this,'M2')">M2</button>
+            <button class="seg-btn" onclick="selectMaquina(this,'M3')">M3</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Código</div>
+        <div class="input-cell">
+          <input type="text" id="cod-producto" placeholder="0000" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Lote</div>
+        <div class="input-cell">
+          <input type="text" id="lote" readonly style="background:#e8f5ee;color:#2d6a4a;font-weight:600;cursor:default;border-color:transparent;" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Hora de arranque</div>
+        <div class="input-cell">
+          <input type="time" id="hora-arranque" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Insumos utilizados</div>
+        <div class="input-cell">
+          <button class="btn-insumos" onclick="goTo('screen-insumos')" id="btn-insumos">
+            <span id="btn-insumos-label">Cargar →</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="goTo('screen-home')">Volver</button>
+      <button class="btn btn-primary" onclick="goToLogin()">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN: INSUMOS ======================== -->
+  <div class="screen" id="screen-insumos">
+    <div class="screen-title">Insumos utilizados</div>
+    <div class="scrollable">
+      <div class="insumos-header">
+        <div></div>
+        <div class="insumos-header-cell">Lote</div>
+        <div class="insumos-header-cell">Cant. Inicial</div>
+        <div class="insumos-header-cell">Cant. Final</div>
+      </div>
+      <div class="insumos-row">
+        <div class="insumos-label">PVC</div>
+        <input class="insumos-input" type="text" id="pvc-lote" placeholder="Lote" maxlength="6" inputmode="numeric">
+        <input class="insumos-input" type="number" id="pvc-ini" placeholder="0" min="0" step="1">
+        <input class="insumos-input" type="number" id="pvc-fin" placeholder="0" min="0" step="1">
+      </div>
+      <div class="insumos-row">
+        <div class="insumos-label">Papel</div>
+        <input class="insumos-input" type="text" id="papel-lote" placeholder="Lote" maxlength="6" inputmode="numeric">
+        <input class="insumos-input" type="number" id="papel-ini" placeholder="0" min="0" step="1">
+        <input class="insumos-input" type="number" id="papel-fin" placeholder="0" min="0" step="1">
+      </div>
+      <div class="insumos-row">
+        <div class="insumos-label">Solapas</div>
+        <input class="insumos-input" type="text" id="solapas-lote" placeholder="Lote" maxlength="6" inputmode="numeric">
+        <input class="insumos-input" type="number" id="solapas-ini" placeholder="0" min="0" step="1">
+        <input class="insumos-input" type="number" id="solapas-fin" placeholder="0" min="0" step="1">
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="goTo('screen-config')">Volver</button>
+      <button class="btn btn-primary" onclick="guardarInsumos()">Guardar</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 4: PRODUCCIÓN EN MARCHA ======================== -->
+  <div class="screen" id="screen-produccion">
+    <div class="status-bar">
+      <div class="status-badge green">● Máquina en marcha</div>
+      <div class="status-machine" id="info-maquina-badge"></div>
+    </div>
+    <div class="info-chips" id="info-chips"></div>
+    <div class="menu-buttons">
+      <button class="btn-menu" onclick="goTo('screen-controles')">Controles</button>
+      <button class="btn-menu" onclick="goTo('screen-parada-menu')" style="background:#c0440a;">Parada de máquina</button>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="cerrarSesion()">Cambio de maquinista</button>
+      <button class="btn btn-danger" onclick="irAFinalizar()">Finalizar producción</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 5: CONTROLES ======================== -->
+  <div class="screen" id="screen-controles">
+    <div class="screen-title">Controles de calidad</div>
+    <div class="scrollable">
+      <div class="ctrl-header">
+        <div class="label-cell">Controles</div>
+        <div class="input-cell">
+          <input type="text" id="ctrl-operario" placeholder="Operario de control" />
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-bottom:12px;">
+        <div class="label-cell">Golpes</div>
+        <div class="input-cell">
+          <input type="text" id="ctrl-golpes" placeholder="000000" maxlength="6" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;">Controles visuales</div>
+
+      <div id="controles-list"></div>
+
+      <div class="section-label" style="margin-top:16px;">Peso (4 muestras)</div>
+      <div class="weight-grid" style="margin-bottom:16px;">
+        <input class="weight-input" type="number" id="peso1" placeholder="0.00">
+        <input class="weight-input" type="number" id="peso2" placeholder="0.00">
+        <input class="weight-input" type="number" id="peso3" placeholder="0.00">
+        <input class="weight-input" type="number" id="peso4" placeholder="0.00">
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="goTo('screen-produccion')">Volver</button>
+      <button class="btn btn-primary" onclick="enviarControles()">Enviar</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 6: PARADA MENÚ ======================== -->
+  <div class="screen" id="screen-parada-menu">
+    <div class="status-bar">
+      <div class="status-badge red">● Máquina detenida</div>
+    </div>
+    <div class="menu-buttons">
+      <button class="btn-menu" onclick="goToParada('insumos')">Cambio de insumos</button>
+      <button class="btn-menu" onclick="goToParada('tecnicos')">Problemas técnicos</button>
+      <button class="btn-menu" onclick="goToParada('otros')">Otros</button>
+    </div>
+    <div class="bottom-single">
+      <button class="btn btn-ghost" onclick="goTo('screen-produccion')">Volver</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 7: PARADA DETALLE ======================== -->
+  <div class="screen" id="screen-parada">
+    <div class="status-bar">
+      <div class="status-badge red">● Máquina detenida</div>
+    </div>
+    <div class="screen-title" id="parada-title">Cambio de insumos</div>
+    <div class="form-rows">
+      <div class="form-row">
+        <div class="label-cell">Golpes</div>
+        <div class="input-cell">
+          <input type="text" id="parada-golpes" placeholder="000000" maxlength="6" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="form-row" id="parada-select-row">
+        <div class="label-cell" id="parada-label2">Insumo</div>
+        <div class="input-cell">
+          <select id="parada-select"></select>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="goTo('screen-parada-menu')">Volver</button>
+      <button class="btn btn-green" onclick="reanudarProduccion()">Reanudar producción</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 8: FINALIZAR ======================== -->
+  <div class="screen" id="screen-finalizar">
+    <div class="screen-title">Finalizar producción</div>
+    <div class="form-rows">
+      <div class="form-row">
+        <div class="label-cell">Golpes finales</div>
+        <div class="input-cell">
+          <input type="text" id="fin-golpes" placeholder="000000" maxlength="6" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Hora de cierre</div>
+        <div class="input-cell">
+          <input type="time" id="fin-hora" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Observaciones</div>
+        <div class="input-cell">
+          <input type="text" id="fin-obs" placeholder="Opcional" />
+        </div>
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="btn btn-ghost" onclick="goTo('screen-produccion')">Volver</button>
+      <button class="btn btn-danger" onclick="irALimpieza()">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 9: LIMPIEZA ======================== -->
+  <div class="screen" id="screen-limpieza">
+    <div class="screen-title">Limpieza de máquina</div>
+
+    <div class="limpieza-status" id="limpieza-status">
+      <div class="limpieza-icon">🧹</div>
+      <div class="limpieza-label" id="limpieza-label">Limpieza en curso</div>
+      <div class="limpieza-timer" id="limpieza-timer">00:00</div>
+      <div class="limpieza-sublabel">Registrando tiempo automáticamente</div>
+    </div>
+
+    <div class="form-rows" style="margin-top:24px;">
+      <div class="form-row">
+        <div class="label-cell">Responsable</div>
+        <div class="input-cell">
+          <input type="text" id="limp-responsable" placeholder="Nombre" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label-cell">Observaciones</div>
+        <div class="input-cell">
+          <input type="text" id="limp-obs" placeholder="Opcional" />
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-single" style="padding-top:32px;">
+      <button class="btn btn-green" onclick="confirmarLimpieza()" id="btn-confirmar-limpieza">
+        ✓ Confirmar limpieza finalizada
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  area: '',
+  maquina: 'M1',
+  operario: '',
+  legajo: '',
+  codProducto: '',
+  lote: '',
+  horaArranque: '',
+  insumos: {},
+  controles: {},
+  paradas: [],
+  produccionId: null,
+};
+
+const CONTROLES_ITEMS = [
+  'Moldeo', 'Dosificado', 'Troquelado', 'Sellado',
+  'Corte longitudinal', 'Corte transversal', 'Despegue', 'Fechador', 'Troquelado final'
+];
+
+const INSUMOS_LIST = ['PVC', 'Papel', 'Etiquetas', 'Desmoldante', 'Gelatina'];
+
+const PUNTOS_FALLA = [
+  'Etiquetadora','Calefacción','Campana de moldeo','Spray','Dosificado',
+  'Codificado','Lector de taco','Sellado','Punzonado','Corte transversal',
+  'Corte longitudinal','Pick & place','Rotura del túnel','Temperatura del túnel',
+  'Cinta transportadora','Cadena','Problemas eléctricos','Problemas neumáticos'
+];
+
+const MOTIVOS_OTROS = [
+  'Falta de personal','Cambio de formato','Falta de suministro',
+  'Problema de insumo','Reunión','Aprobación de marcha'
+];
+
+// Google Apps Script URL (reemplazar con tu URL real)
+const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/planetadulce.com.ar/s/AKfycbyego2zbulR3PP5CMfxmE1B9ZeYO6VGHi5Yt1jOeGvmyrzjg-PbLbQpW0p0OhSGL3rG/exec';
+
+// ============================================================
+// NAV
+// ============================================================
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function showLoading(show) {
+  document.getElementById('loading').classList.toggle('show', show);
+}
+
+// ============================================================
+// SCREEN 1 → 2
+// ============================================================
+function selectArea(area) {
+  state.area = area;
+  if (area === 'Cocina') {
+    showToast('Sección Cocina próximamente');
+    return;
+  }
+  // Set default time on config screen
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('hora-arranque').value = `${hh}:${mm}`;
+  generarLote();
+  goTo('screen-config');
+}
+
+// ============================================================
+// SEGMENTED (Máquina)
+// ============================================================
+function selectMaquina(btn, maquina) {
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.maquina = maquina;
+}
+
+// ============================================================
+// BASE DE OPERARIOS
+// ============================================================
+const OPERARIOS = {
+  '1': 'Fer',
+  '2': 'Juan',
+  '3': 'Tati',
+};
+
+function buscarOperario() {
+  const legajo = document.getElementById('op-legajo').value.trim();
+  const nombreInput = document.getElementById('op-nombre');
+  if (OPERARIOS[legajo]) {
+    nombreInput.value = OPERARIOS[legajo];
+    nombreInput.style.background = '#e8f5ee';
+    nombreInput.style.color = '#2d6a4a';
+    nombreInput.style.borderColor = 'transparent';
+  } else {
+    nombreInput.value = legajo.length > 0 ? 'Legajo no encontrado' : '—';
+    nombreInput.style.background = legajo.length > 0 ? '#3d1a1a' : '#f0f0f0';
+    nombreInput.style.color = legajo.length > 0 ? '#b34a4a' : '#555';
+    nombreInput.style.borderColor = 'transparent';
+  }
+}
+
+// ============================================================
+// AUTO-LOTE
+// ============================================================
+function generarLote() {
+  const hoy = new Date();
+  const año = String(hoy.getFullYear()).slice(-2); // "26"
+  const inicio = new Date(hoy.getFullYear(), 0, 0);
+  const diff = hoy - inicio;
+  const ordinal = Math.floor(diff / 86400000); // día del año
+  const lote = año + String(ordinal).padStart(3, '0');
+  document.getElementById('lote').value = lote;
+  state.lote = lote;
+  return lote;
+}
+
+// ============================================================
+// INSUMOS
+// ============================================================
+function guardarInsumos() {
+  state.insumos = {
+    pvc:    { lote: document.getElementById('pvc-lote').value,    ini: document.getElementById('pvc-ini').value,    fin: document.getElementById('pvc-fin').value },
+    papel:  { lote: document.getElementById('papel-lote').value,  ini: document.getElementById('papel-ini').value,  fin: document.getElementById('papel-fin').value },
+    solapas:{ lote: document.getElementById('solapas-lote').value,ini: document.getElementById('solapas-ini').value,fin: document.getElementById('solapas-fin').value },
+  };
+  // Mark button as saved
+  const btn = document.getElementById('btn-insumos');
+  btn.classList.add('saved');
+  document.getElementById('btn-insumos-label').textContent = '✓ Cargados';
+  showToast('✓ Insumos guardados');
+  goTo('screen-config');
+}
+
+// ============================================================
+// SCREEN CONFIG → LOGIN
+// ============================================================
+function goToLogin() {
+  const cod = document.getElementById('cod-producto').value.trim();
+  const lote = document.getElementById('lote').value.trim();
+  const hora = document.getElementById('hora-arranque').value;
+  if (!cod || !lote || !hora) { showToast('Completá todos los campos'); return; }
+  state.codProducto = cod;
+  state.lote = lote;
+  state.horaArranque = hora;
+  // insumos already saved via guardarInsumos()
+  // Clear login fields for fresh entry
+  document.getElementById('op-nombre').value = '';
+  document.getElementById('op-legajo').value = '';
+  goTo('screen-login');
+}
+
+// ============================================================
+// SCREEN LOGIN → PRODUCCIÓN
+// ============================================================
+function goToConfigProduccion() {
+  const legajo = document.getElementById('op-legajo').value.trim();
+  const nombre = OPERARIOS[legajo];
+  if (!legajo || !nombre) { showToast('Legajo no reconocido'); return; }
+  state.operario = nombre;
+  state.legajo = legajo;
+  iniciarProduccion();
+}
+
+// ============================================================
+// SCREEN 3 → 4
+// ============================================================
+function iniciarProduccion() {
+  state.produccionId = Date.now();
+
+  // Update info chips
+  document.getElementById('info-maquina-badge').textContent = state.maquina;
+  document.getElementById('info-chips').innerHTML = `
+    <div class="chip">Máquina: <span>${state.maquina}</span></div>
+    <div class="chip">Lote: <span>${state.lote}</span></div>
+    <div class="chip">Código: <span>${state.codProducto}</span></div>
+    <div class="chip">Operario: <span>${state.operario}</span></div>
+    <div class="chip">Inicio: <span>${state.horaArranque}</span></div>
+  `;
+
+  // Build controles list
+  buildControlesList();
+
+  goTo('screen-produccion');
+
+  // Send to Google Sheets
+  sendData('iniciar_produccion', {
+    id: state.produccionId,
+    area: state.area,
+    maquina: state.maquina,
+    operario: state.operario,
+    legajo: state.legajo,
+    codProducto: state.codProducto,
+    lote: state.lote,
+    horaArranque: state.horaArranque,
+    insumos: state.insumos,
+    fecha: new Date().toLocaleDateString('es-AR'),
+  });
+}
+
+// ============================================================
+// CONTROLES
+// ============================================================
+function buildControlesList() {
+  const container = document.getElementById('controles-list');
+  container.innerHTML = '';
+  state.controles = {};
+  CONTROLES_ITEMS.forEach(item => {
+    state.controles[item] = '';
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    row.style.marginBottom = '10px';
+    row.innerHTML = `
+      <div class="label-cell" style="font-size:13px;">${item}</div>
+      <div class="toggle-group">
+        <button class="toggle-btn ok" onclick="setControl(this,'${item}','OK')">OK</button>
+        <button class="toggle-btn nok" onclick="setControl(this,'${item}','No OK')">No OK</button>
+        <button class="toggle-btn nc" onclick="setControl(this,'${item}','NC')">NC</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function setControl(btn, item, value) {
+  const group = btn.closest('.toggle-group');
+  group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.controles[item] = value;
+}
+
+function enviarControles() {
+  const opCtrl = document.getElementById('ctrl-operario').value.trim();
+  const golpes = document.getElementById('ctrl-golpes').value.trim();
+  if (!opCtrl || !golpes) { showToast('Completá operario y golpes'); return; }
+
+  const pesos = [
+    document.getElementById('peso1').value,
+    document.getElementById('peso2').value,
+    document.getElementById('peso3').value,
+    document.getElementById('peso4').value,
+  ];
+
+  sendData('control', {
+    produccionId: state.produccionId,
+    maquina: state.maquina,
+    lote: state.lote,
+    operarioControl: opCtrl,
+    golpes,
+    controles: state.controles,
+    pesos,
+    fecha: new Date().toLocaleDateString('es-AR'),
+    hora: new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}),
+  });
+
+  showToast('✓ Control enviado');
+  goTo('screen-produccion');
+
+  // Reset controles
+  document.getElementById('ctrl-operario').value = '';
+  document.getElementById('ctrl-golpes').value = '';
+  ['peso1','peso2','peso3','peso4'].forEach(id => document.getElementById(id).value = '');
+  buildControlesList();
+}
+
+// ============================================================
+// PARADA
+// ============================================================
+function goToParada(tipo) {
+  const selectEl = document.getElementById('parada-select');
+  const labelEl = document.getElementById('parada-label2');
+  const titleEl = document.getElementById('parada-title');
+  selectEl.innerHTML = '';
+  document.getElementById('parada-golpes').value = '';
+
+  if (tipo === 'insumos') {
+    titleEl.textContent = 'Cambio de insumos';
+    labelEl.textContent = 'Insumo';
+    ['Insumo', ...INSUMOS_LIST].forEach(opt => {
+      selectEl.innerHTML += `<option>${opt}</option>`;
+    });
+  } else if (tipo === 'tecnicos') {
+    titleEl.textContent = 'Problemas técnicos';
+    labelEl.textContent = 'Punto de falla';
+    ['Punto de falla', ...PUNTOS_FALLA].forEach(opt => {
+      selectEl.innerHTML += `<option>${opt}</option>`;
+    });
+  } else {
+    titleEl.textContent = 'Otros';
+    labelEl.textContent = 'Motivo';
+    ['Motivo', ...MOTIVOS_OTROS].forEach(opt => {
+      selectEl.innerHTML += `<option>${opt}</option>`;
+    });
+  }
+
+  state._paradaTipo = tipo;
+  goTo('screen-parada');
+}
+
+function reanudarProduccion() {
+  const golpes = document.getElementById('parada-golpes').value.trim();
+  const seleccion = document.getElementById('parada-select').value;
+  if (!golpes || seleccion === document.getElementById('parada-select').options[0].value) {
+    showToast('Completá todos los campos');
+    return;
+  }
+
+  const parada = {
+    produccionId: state.produccionId,
+    tipo: state._paradaTipo,
+    seleccion,
+    golpes,
+    hora: new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}),
+    fecha: new Date().toLocaleDateString('es-AR'),
+  };
+  state.paradas.push(parada);
+  sendData('parada', parada);
+
+  showToast('✓ Parada registrada — Reanudando');
+  goTo('screen-produccion');
+}
+
+// ============================================================
+// FINALIZAR / CERRAR SESIÓN
+// ============================================================
+function irAFinalizar() {
+  const now = new Date();
+  document.getElementById('fin-hora').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  goTo('screen-finalizar');
+}
+
+// ============================================================
+// LIMPIEZA
+// ============================================================
+let _limpiezaTimer = null;
+let _limpiezaSegundos = 0;
+let _limpiezaInicio = null;
+
+function irALimpieza() {
+  const golpes = document.getElementById('fin-golpes').value.trim();
+  const hora = document.getElementById('fin-hora').value;
+  if (!golpes || !hora) { showToast('Completá golpes finales y hora'); return; }
+
+  // Guardar datos de cierre de producción en state
+  state._finGolpes = golpes;
+  state._finHora = hora;
+  state._finObs = document.getElementById('fin-obs').value;
+
+  // Arrancar timer de limpieza
+  _limpiezaSegundos = 0;
+  _limpiezaInicio = new Date();
+  clearInterval(_limpiezaTimer);
+  _limpiezaTimer = setInterval(() => {
+    _limpiezaSegundos++;
+    const mm = String(Math.floor(_limpiezaSegundos / 60)).padStart(2,'0');
+    const ss = String(_limpiezaSegundos % 60).padStart(2,'0');
+    document.getElementById('limpieza-timer').textContent = `${mm}:${ss}`;
+  }, 1000);
+
+  document.getElementById('limp-responsable').value = '';
+  document.getElementById('limp-obs').value = '';
+  goTo('screen-limpieza');
+}
+
+function confirmarLimpieza() {
+  const responsable = document.getElementById('limp-responsable').value.trim();
+  if (!responsable) { showToast('Ingresá el responsable de limpieza'); return; }
+
+  if (!confirm('¿Confirmar que la limpieza fue completada y finalizar el turno?')) return;
+
+  clearInterval(_limpiezaTimer);
+  const duracionMin = Math.ceil(_limpiezaSegundos / 60);
+
+  sendData('finalizar_produccion', {
+    produccionId: state.produccionId,
+    maquina: state.maquina,
+    lote: state.lote,
+    golpesFinales: state._finGolpes,
+    horaCierre: state._finHora,
+    observaciones: state._finObs,
+    limpiezaResponsable: responsable,
+    limpiezaDuracionMin: duracionMin,
+    limpiezaObs: document.getElementById('limp-obs').value,
+    fecha: new Date().toLocaleDateString('es-AR'),
+  });
+
+  showToast('✓ Turno finalizado correctamente');
+  setTimeout(() => resetApp(), 1500);
+}
+
+function cerrarSesion() {
+  document.getElementById('op-legajo').value = '';
+  document.getElementById('op-nombre').value = '—';
+  const nombreInput = document.getElementById('op-nombre');
+  nombreInput.style.background = '#f0f0f0';
+  nombreInput.style.color = '#555';
+  goTo('screen-login');
+}
+
+function resetApp() {
+  clearInterval(_limpiezaTimer);
+  _limpiezaSegundos = 0;
+  document.getElementById('limpieza-timer').textContent = '00:00';
+  Object.assign(state, {
+    area:'', maquina:'M1', operario:'', legajo:'', codProducto:'',
+    lote:'', horaArranque:'', insumos:{}, controles:{}, paradas:[], produccionId:null
+  });
+  document.querySelectorAll('input').forEach(i => i.value = '');
+  document.querySelectorAll('.seg-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  const btnIns = document.getElementById('btn-insumos');
+  btnIns.classList.remove('saved');
+  document.getElementById('btn-insumos-label').textContent = 'Cargar →';
+  goTo('screen-home');
+}
+
+// ============================================================
+// INPUT RESTRICTIONS (enforced in real time)
+// ============================================================
+function onlyDigits(e) {
+  // Allow: backspace, delete, tab, arrows, ctrl+A/C/V/X
+  if ([8,9,37,38,39,40,46].includes(e.keyCode) || (e.ctrlKey || e.metaKey)) return;
+  if (!/[0-9]/.test(e.key)) e.preventDefault();
+}
+function onlyAlpha(e) {
+  if ([8,9,37,38,39,40,46].includes(e.keyCode) || (e.ctrlKey || e.metaKey)) return;
+  if (!/[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/.test(e.key)) e.preventDefault();
+}
+function stripNonDigits(input) {
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^0-9]/g, '');
+  });
+  input.addEventListener('keydown', onlyDigits);
+}
+function stripNonAlpha(input) {
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+  });
+  input.addEventListener('keydown', onlyAlpha);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Numeric-only fields
+  ['cod-producto','pvc-lote','papel-lote','solapas-lote',
+   'op-legajo','ctrl-golpes','parada-golpes','fin-golpes']
+    .forEach(id => { const el = document.getElementById(id); if(el) stripNonDigits(el); });
+
+  // Código: exactly 4 digits
+  document.getElementById('cod-producto').setAttribute('maxlength','4');
+
+  // Lote y lotes de insumos: max 6 digits
+  ['pvc-lote','papel-lote','solapas-lote','ctrl-golpes','parada-golpes','fin-golpes']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.setAttribute('maxlength','6'); });
+
+  // Legajo: max 6 digits
+  document.getElementById('op-legajo').setAttribute('maxlength','6');
+
+  // op-nombre es readonly, no necesita filtro
+
+  // Cantidades insumos: solo enteros positivos (via number input min=0 step=1)
+  ['pvc-ini','pvc-fin','papel-ini','papel-fin','solapas-ini','solapas-fin'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/[^0-9]/g,'');
+    });
+    el.addEventListener('keydown', onlyDigits);
+  });
+});
+
+async function sendData(action, data) {
+  if (APPS_SCRIPT_URL === 'TU_APPS_SCRIPT_URL_AQUI') {
+    console.log(`[DEMO] action: ${action}`, data);
+    return;
+  }
+  try {
+    showLoading(true);
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, ...data }),
+    });
+  } catch(e) {
+    showToast('Error de conexión');
+    console.error(e);
+  } finally {
+    showLoading(false);
+  }
+}
+</script>
+</body>
+</html>
